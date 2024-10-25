@@ -1,12 +1,92 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Embedded Document تقرير ملف اكسل</title>
+    <title>Training Fee Calculator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 500px;
+            margin: auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+        }
+        h2 {
+            text-align: center;
+        }
+        label {
+            display: block;
+            margin-top: 10px;
+        }
+        input[type="number"] {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+            box-sizing: border-box;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            margin-top: 20px;
+            background-color: #28a745;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        .result {
+            margin-top: 20px;
+            font-size: 18px;
+            font-weight: bold;
+            text-align: center;
+        }
+    </style>
+    <script>
+        function calculateFee() {
+            var students = parseInt(document.getElementById('students').value);
+            var hours = parseFloat(document.getElementById('hours').value);
+            var hourlyRate = 200; // Base hourly rate in SAR
+            var maxStudents = 30;
+            var totalFee = 0;
+
+            if (isNaN(students) || isNaN(hours) || students <= 0 || hours <= 0) {
+                document.getElementById('result').innerHTML = "Please enter valid numbers for both fields.";
+                return;
+            }
+
+            if (students <= maxStudents) {
+                totalFee = hourlyRate * hours;
+            } else {
+                var extraStudents = students - maxStudents;
+                var extraCostPerHour = extraStudents * (100 / maxStudents);
+                var newHourlyRate = hourlyRate + extraCostPerHour;
+                totalFee = newHourlyRate * hours;
+            }
+
+            totalFee = totalFee.toFixed(2);
+            document.getElementById('result').innerHTML = "Total Training Fee: " + totalFee + " SAR";
+        }
+    </script>
 </head>
 <body>
-    <h1>Embedded Content</h1>
-  <iframe width="700" height="900" frameborder="0" scrolling="no" src="https://mttvtcedu-my.sharepoint.com/:x:/g/personal/kalenezi1_tvtc_gov_sa/EQBJEoWaE89Gla3EVc0ybXwBPKaaAeNHWeoKL77uIThiZQ></iframe>
+    <div class="container">
+        <h2>Training Fee Calculator</h2>
+        <label for="students">Number of Students:</label>
+        <input type="number" id="students" name="students" min="1" placeholder="Enter number of students">
+
+        <label for="hours">Number of Training Hours:</label>
+        <input type="number" id="hours" name="hours" min="1" step="0.5" placeholder="Enter number of hours">
+
+        <button type="button" onclick="calculateFee()">Calculate Fee</button>
+
+        <div class="result" id="result"></div>
+    </div>
 </body>
 </html>
