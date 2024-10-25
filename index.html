@@ -26,10 +26,12 @@
         h2 {
             text-align: center;
             margin-top: 0;
+            color: #007bff;
         }
         label {
             display: block;
             margin-top: 15px;
+            font-weight: bold;
         }
         input[type="number"],
         select {
@@ -39,6 +41,8 @@
             box-sizing: border-box;
             text-align: right;
             font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
         }
         input[type="checkbox"] {
             margin-top: 10px;
@@ -54,7 +58,7 @@
             width: 100%;
             padding: 15px;
             margin-top: 20px;
-            background-color: #007bff;
+            background-color: #28a745; /* تغيير لون الزر */
             color: #fff;
             border: none;
             border-radius: 5px;
@@ -63,22 +67,28 @@
             box-sizing: border-box;
         }
         button:hover {
-            background-color: #0056b3;
+            background-color: #218838;
         }
         .result {
             margin-top: 20px;
-            font-size: 20px;
+            font-size: 22px;
             font-weight: bold;
             text-align: center;
+            color: #28a745;
         }
         .details {
             margin-top: 20px;
             font-size: 18px;
             line-height: 1.6;
+            border: 2px solid #007bff; /* إضافة إطار */
+            padding: 15px; /* إضافة حشوة */
+            border-radius: 5px; /* زوايا مستديرة */
+            background-color: #e9f5ff; /* خلفية بلون فاتح */
         }
         .details h3 {
             text-align: center;
             margin-bottom: 10px;
+            color: #007bff;
         }
         .qr-code {
             margin-top: 20px;
@@ -116,7 +126,7 @@
                 padding: 10px;
             }
             .result {
-                font-size: 18px;
+                font-size: 20px;
             }
             .details {
                 font-size: 16px;
@@ -226,7 +236,7 @@
                 var detailsDiv = document.getElementById('details');
                 detailsDiv.innerHTML = "<h3>تفاصيل التسعيرة:</h3>";
                 for (const [key, value] of Object.entries(details)) {
-                    detailsDiv.innerHTML += `<p>${key}: ${value}</p>`;
+                    detailsDiv.innerHTML += `<p><strong>${key}:</strong> ${value}</p>`;
                 }
 
                 // إنشاء رابط يحتوي على المعلمات
