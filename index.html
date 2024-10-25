@@ -263,6 +263,10 @@
                 shareLink.style.marginTop = '20px';
                 shareLink.style.textAlign = 'center';
                 shareLink.style.fontSize = '16px';
+                shareLink.style.color = '#007bff'; /* لون الرابط */
+                shareLink.style.textDecoration = 'none'; /* إزالة التسطير */
+                shareLink.onmouseover = function() { this.style.textDecoration = 'underline'; };
+                shareLink.onmouseout = function() { this.style.textDecoration = 'none'; };
                 document.getElementById('download-link').innerHTML = '';
                 document.getElementById('download-link').appendChild(shareLink);
 
