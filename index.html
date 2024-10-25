@@ -21,6 +21,7 @@
             border-radius: 5px;
             box-sizing: border-box;
             box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+            position: relative;
         }
         h2 {
             text-align: center;
@@ -80,6 +81,13 @@
             font-size: 16px;
             color: #555;
         }
+        .watermark {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            font-size: 14px;
+            color: #aaa;
+        }
         /* تصميم متجاوب */
         @media (max-width: 600px) {
             .container {
@@ -109,10 +117,49 @@
             }
         }
     </style>
-    <!-- إضافة مكتبة QR Code JavaScript -->
+    <!-- إضافة مكتبات JavaScript -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script>
-        function calculateFee() {
+        async function generatePDF(totalFee, timestamp, details) {
+            const { jsPDF } = window.jspdf;
+
+            // إنشاء مستند PDF جديد
+            const doc = new jsPDF();
+
+            // إضافة العنوان
+            doc.setFontSize(20);
+            doc.text("تفاصيل رسوم التدريب", 105, 20, { align: "center" });
+
+            // إضافة التفاصيل
+            doc.setFontSize(14);
+            let yPosition = 40;
+            for (const [key, value] of Object.entries(details)) {
+                doc.text(`${key}: ${value}`, 20, yPosition);
+                yPosition += 10;
+            }
+
+            // إضافة إجمالي الرسوم
+            doc.setFontSize(16);
+            doc.text(`إجمالي الرسوم: ${totalFee} ريال سعودي`, 20, yPosition + 10);
+
+            // إضافة الطابع الزمني
+            doc.setFontSize(12);
+            doc.text(`الوقت: ${timestamp}`, 20, yPosition + 20);
+
+            // إضافة العلامة المائية
+            doc.setFontSize(10);
+            doc.setTextColor(150);
+            doc.text("تطوير khaled1", 105, 290, { align: "center" });
+
+            // حفظ ملف PDF في Blob URL
+            const pdfBlob = doc.output('blob');
+            const pdfUrl = URL.createObjectURL(pdfBlob);
+
+            return pdfUrl;
+        }
+
+        async function calculateFee() {
             var students = parseInt(document.getElementById('students').value);
             var hours = parseFloat(document.getElementById('hours').value);
             var courseType = document.getElementById('courseType').value;
@@ -155,12 +202,35 @@
             var timestamp = currentDate.toLocaleString('ar-SA');
             document.getElementById('timestamp').innerHTML = "الوقت: " + timestamp;
 
-            // توليد رمز QR
+            // تفاصيل للتضمين في PDF
+            var details = {
+                "نوع الدورة": courseType,
+                "عدد الطلاب": students,
+                "عدد الساعات": hours,
+                "شامل الحقيبة التدريبية": includeMaterials ? "نعم" : "لا"
+            };
+
+            // توليد ملف PDF والحصول على الرابط
+            var pdfUrl = await generatePDF(totalFee, timestamp, details);
+
+            // توليد رمز QR يشير إلى ملف PDF
             var qr = new QRious({
                 element: document.getElementById('qr-code'),
                 size: 200,
-                value: "إجمالي الرسوم: " + totalFee + " ريال سعودي\n" + "الوقت: " + timestamp
+                value: pdfUrl
             });
+
+            // إنشاء رابط لتحميل ملف PDF
+            var downloadLink = document.createElement('a');
+            downloadLink.href = pdfUrl;
+            downloadLink.download = 'تفاصيل_الرسوم.pdf';
+            downloadLink.textContent = 'تحميل تفاصيل الرسوم كملف PDF';
+            downloadLink.style.display = 'block';
+            downloadLink.style.marginTop = '20px';
+            downloadLink.style.textAlign = 'center';
+            downloadLink.style.fontSize = '16px';
+            document.getElementById('download-link').innerHTML = '';
+            document.getElementById('download-link').appendChild(downloadLink);
         }
     </script>
 </head>
@@ -189,9 +259,11 @@
 
         <div class="result" id="result"></div>
         <div class="timestamp" id="timestamp"></div>
+        <div id="download-link"></div>
         <div class="qr-code">
             <canvas id="qr-code"></canvas>
         </div>
+        <div class="watermark">تطوير khaled1</div>
     </div>
 </body>
 </html>
