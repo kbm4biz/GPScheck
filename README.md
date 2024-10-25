@@ -1,2 +1,2 @@
-# excel
-embeded excel files
+# training 
+fees   calculator 
