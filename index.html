@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>( دورة تخصصية) حاسبة رسوم التدريب</title>
+    <title>حاسبة رسوم تدريب (دورة تخصصية)</title>
     <style>
         body {
             font-family: Tahoma, Arial, sans-serif;
@@ -27,6 +27,12 @@
             text-align: center;
             margin-top: 0;
             color: #007bff;
+        }
+        /* تسليط الضوء على "دورة تخصصية" */
+        .highlight {
+            background-color: #ffeb3b;
+            padding: 0 5px;
+            border-radius: 3px;
         }
         label {
             display: block;
@@ -144,7 +150,7 @@
 </head>
 <body>
     <div class="container">
-        <h2>حاسبة رسوم التدريب</h2>
+        <h2>حاسبة رسوم تدريب (<span class="highlight">دورة تخصصية</span>)</h2>
 
         <label for="courseType">نوع الدورة:</label>
         <select id="courseType" name="courseType">
@@ -195,10 +201,10 @@
                     return;
                 }
 
-                if (courseType === "حضوري") {
+                if (courseType === "عن بعد") {
                     // نفس سعر الساعة بدون إضافات بغض النظر عن عدد الطلاب
                     totalFee = hourlyRate * hours;
-                } else if (courseType === "عن بعد") {
+                } else if (courseType === "حضوري") {
                     if (students <= maxStudents) {
                         totalFee = hourlyRate * hours;
                     } else {
