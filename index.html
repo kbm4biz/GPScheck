@@ -71,6 +71,15 @@
             font-weight: bold;
             text-align: center;
         }
+        .details {
+            margin-top: 20px;
+            font-size: 18px;
+            line-height: 1.6;
+        }
+        .details h3 {
+            text-align: center;
+            margin-bottom: 10px;
+        }
         .qr-code {
             margin-top: 20px;
             text-align: center;
@@ -109,6 +118,9 @@
             .result {
                 font-size: 18px;
             }
+            .details {
+                font-size: 16px;
+            }
             .timestamp {
                 font-size: 14px;
             }
@@ -117,11 +129,8 @@
             }
         }
     </style>
-    <!-- إضافة مكتبات JavaScript -->
+    <!-- إضافة مكتبة QRious -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
-    <!-- مكتبة pdfmake -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.4/pdfmake.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.4/vfs_fonts.js"></script>
 </head>
 <body>
     <div class="container">
@@ -148,7 +157,7 @@
 
         <div class="result" id="result"></div>
         <div class="timestamp" id="timestamp"></div>
-        <div id="download-link"></div>
+        <div class="details" id="details"></div>
         <div class="qr-code">
             <canvas id="qr-code"></canvas>
         </div>
@@ -156,58 +165,7 @@
     </div>
 
     <script>
-        async function generatePDF(totalFee, timestamp, details) {
-            var docDefinition = {
-                content: [
-                    { text: 'تفاصيل رسوم التدريب', style: 'header', alignment: 'center' },
-                    {
-                        style: 'tableExample',
-                        table: {
-                            widths: ['*', '*'],
-                            body: [
-                                [{ text: details['نوع الدورة'], alignment: 'right' }, { text: 'نوع الدورة', alignment: 'right' }],
-                                [{ text: details['عدد الطلاب'], alignment: 'right' }, { text: 'عدد الطلاب', alignment: 'right' }],
-                                [{ text: details['عدد الساعات'], alignment: 'right' }, { text: 'عدد الساعات', alignment: 'right' }],
-                                [{ text: details['شامل الحقيبة التدريبية'], alignment: 'right' }, { text: 'شامل الحقيبة التدريبية', alignment: 'right' }],
-                                [{ text: totalFee + ' ريال سعودي', alignment: 'right' }, { text: 'إجمالي الرسوم', alignment: 'right' }],
-                                [{ text: timestamp, alignment: 'right' }, { text: 'الوقت', alignment: 'right' }]
-                            ]
-                        },
-                        layout: 'noBorders',
-                        alignment: 'right'
-                    },
-                    { text: 'تطوير khaled1', style: 'footer', alignment: 'center' }
-                ],
-                defaultStyle: {
-                    font: 'Arial',
-                    alignment: 'right'
-                },
-                styles: {
-                    header: {
-                        fontSize: 18,
-                        bold: true
-                    },
-                    footer: {
-                        fontSize: 10,
-                        color: 'gray'
-                    }
-                },
-                pageMargins: [40, 60, 40, 60]
-            };
-
-            // توليد ملف PDF
-            var pdfDocGenerator = pdfMake.createPdf(docDefinition);
-
-            // تحويله إلى Blob URL
-            return new Promise((resolve, reject) => {
-                pdfDocGenerator.getBlob((blob) => {
-                    const pdfUrl = URL.createObjectURL(blob);
-                    resolve(pdfUrl);
-                });
-            });
-        }
-
-        async function calculateFee() {
+        function calculateFee() {
             try {
                 var students = parseInt(document.getElementById('students').value);
                 var hours = parseFloat(document.getElementById('hours').value);
@@ -219,9 +177,9 @@
 
                 if (isNaN(students) || isNaN(hours) || students <= 0 || hours <= 0) {
                     document.getElementById('result').innerHTML = "الرجاء إدخال أرقام صحيحة في جميع الحقول.";
-                    document.getElementById('qr-code').innerHTML = "";
                     document.getElementById('timestamp').innerHTML = "";
-                    document.getElementById('download-link').innerHTML = "";
+                    document.getElementById('details').innerHTML = "";
+                    document.getElementById('qr-code').innerHTML = "";
                     return;
                 }
 
@@ -252,7 +210,7 @@
                 var timestamp = currentDate.toLocaleString('ar-SA');
                 document.getElementById('timestamp').innerHTML = "الوقت: " + timestamp;
 
-                // تفاصيل للتضمين في PDF
+                // تفاصيل للتضمين في العرض
                 var details = {
                     "نوع الدورة": courseType,
                     "عدد الطلاب": students,
@@ -260,27 +218,27 @@
                     "شامل الحقيبة التدريبية": includeMaterials ? "نعم" : "لا"
                 };
 
-                // توليد ملف PDF والحصول على الرابط
-                var pdfUrl = await generatePDF(totalFee, timestamp, details);
+                // عرض التفاصيل في الصفحة
+                var detailsDiv = document.getElementById('details');
+                detailsDiv.innerHTML = "<h3>تفاصيل التسعيرة:</h3>";
+                for (const [key, value] of Object.entries(details)) {
+                    detailsDiv.innerHTML += `<p>${key}: ${value}</p>`;
+                }
 
-                // توليد رمز QR يشير إلى ملف PDF
+                // إنشاء نص لعرضه في رمز QR
+                var qrText = `إجمالي الرسوم: ${totalFee} ريال سعودي\n`;
+                qrText += `الوقت: ${timestamp}\n`;
+                for (const [key, value] of Object.entries(details)) {
+                    qrText += `${key}: ${value}\n`;
+                }
+
+                // توليد رمز QR
                 var qr = new QRious({
                     element: document.getElementById('qr-code'),
                     size: 200,
-                    value: pdfUrl
+                    value: qrText
                 });
 
-                // إنشاء رابط لتحميل ملف PDF
-                var downloadLink = document.createElement('a');
-                downloadLink.href = pdfUrl;
-                downloadLink.download = 'تفاصيل_الرسوم.pdf';
-                downloadLink.textContent = 'تحميل تفاصيل الرسوم كملف PDF';
-                downloadLink.style.display = 'block';
-                downloadLink.style.marginTop = '20px';
-                downloadLink.style.textAlign = 'center';
-                downloadLink.style.fontSize = '16px';
-                document.getElementById('download-link').innerHTML = '';
-                document.getElementById('download-link').appendChild(downloadLink);
             } catch (error) {
                 console.error('Error in calculateFee:', error);
             }
