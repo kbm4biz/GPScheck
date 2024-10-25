@@ -1,14 +1,16 @@
 <!DOCTYPE html>
-<html>
+<html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>Training Fee Calculator</title>
+    <title>حاسبة رسوم التدريب</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: Tahoma, Arial, sans-serif;
             background-color: #f4f4f4;
             margin: 0;
             padding: 20px;
+            direction: rtl;
+            text-align: right;
         }
         .container {
             max-width: 500px;
@@ -30,16 +32,21 @@
             padding: 8px;
             margin-top: 5px;
             box-sizing: border-box;
+            text-align: right;
         }
         button {
             width: 100%;
             padding: 10px;
             margin-top: 20px;
-            background-color: #28a745;
+            background-color: #007bff;
             color: #fff;
             border: none;
             border-radius: 5px;
             font-size: 16px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
         }
         .result {
             margin-top: 20px;
@@ -52,12 +59,12 @@
         function calculateFee() {
             var students = parseInt(document.getElementById('students').value);
             var hours = parseFloat(document.getElementById('hours').value);
-            var hourlyRate = 200; // Base hourly rate in SAR
+            var hourlyRate = 200; // سعر الساعة الأساسي بالريال السعودي
             var maxStudents = 30;
             var totalFee = 0;
 
             if (isNaN(students) || isNaN(hours) || students <= 0 || hours <= 0) {
-                document.getElementById('result').innerHTML = "Please enter valid numbers for both fields.";
+                document.getElementById('result').innerHTML = "الرجاء إدخال أرقام صحيحة في كلا الحقلين.";
                 return;
             }
 
@@ -71,20 +78,20 @@
             }
 
             totalFee = totalFee.toFixed(2);
-            document.getElementById('result').innerHTML = "Total Training Fee: " + totalFee + " SAR";
+            document.getElementById('result').innerHTML = "إجمالي رسوم التدريب: " + totalFee + " ريال سعودي";
         }
     </script>
 </head>
 <body>
     <div class="container">
-        <h2>Training Fee Calculator</h2>
-        <label for="students">Number of Students:</label>
-        <input type="number" id="students" name="students" min="1" placeholder="Enter number of students">
+        <h2>حاسبة رسوم التدريب</h2>
+        <label for="students">عدد الطلاب:</label>
+        <input type="number" id="students" name="students" min="1" placeholder="أدخل عدد الطلاب">
 
-        <label for="hours">Number of Training Hours:</label>
-        <input type="number" id="hours" name="hours" min="1" step="0.5" placeholder="Enter number of hours">
+        <label for="hours">عدد ساعات التدريب:</label>
+        <input type="number" id="hours" name="hours" min="1" step="0.5" placeholder="أدخل عدد الساعات">
 
-        <button type="button" onclick="calculateFee()">Calculate Fee</button>
+        <button type="button" onclick="calculateFee()">احسب الرسوم</button>
 
         <div class="result" id="result"></div>
     </div>
