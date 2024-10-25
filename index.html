@@ -13,7 +13,7 @@
             text-align: right;
         }
         .container {
-            max-width: 500px;
+            max-width: 600px;
             margin: auto;
             background: #fff;
             padding: 20px;
@@ -27,12 +27,16 @@
             display: block;
             margin-top: 10px;
         }
-        input[type="number"] {
+        input[type="number"],
+        select {
             width: 100%;
             padding: 8px;
             margin-top: 5px;
             box-sizing: border-box;
             text-align: right;
+        }
+        input[type="checkbox"] {
+            margin-top: 10px;
         }
         button {
             width: 100%;
@@ -54,11 +58,25 @@
             font-weight: bold;
             text-align: center;
         }
+        .qr-code {
+            margin-top: 20px;
+            text-align: center;
+        }
+        .timestamp {
+            margin-top: 10px;
+            text-align: center;
+            font-size: 14px;
+            color: #555;
+        }
     </style>
+    <!-- إضافة مكتبة QR Code JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
     <script>
         function calculateFee() {
             var students = parseInt(document.getElementById('students').value);
             var hours = parseFloat(document.getElementById('hours').value);
+            var courseType = document.getElementById('courseType').value;
+            var includeMaterials = document.getElementById('materials').checked;
             var hourlyRate = 200; // سعر الساعة الأساسي بالريال السعودي
             var maxStudents = 30;
             var totalFee = 0;
@@ -68,32 +86,70 @@
                 return;
             }
 
-            if (students <= maxStudents) {
+            if (courseType === "حضوري") {
+                // نفس سعر الساعة بدون إضافات بغض النظر عن عدد الطلاب
                 totalFee = hourlyRate * hours;
-            } else {
-                var extraStudents = students - maxStudents;
-                var extraCostPerHour = extraStudents * (100 / maxStudents);
-                var newHourlyRate = hourlyRate + extraCostPerHour;
-                totalFee = newHourlyRate * hours;
+            } else if (courseType === "عن بعد") {
+                if (students <= maxStudents) {
+                    totalFee = hourlyRate * hours;
+                } else {
+                    var extraStudents = students - maxStudents;
+                    var extraCostPerHour = extraStudents * (100 / maxStudents);
+                    var newHourlyRate = hourlyRate + extraCostPerHour;
+                    totalFee = newHourlyRate * hours;
+                }
+            }
+
+            // إضافة رسوم الحقيبة التدريبية إذا تم اختيارها
+            if (includeMaterials) {
+                totalFee += 999;
             }
 
             totalFee = totalFee.toFixed(2);
             document.getElementById('result').innerHTML = "إجمالي رسوم التدريب: " + totalFee + " ريال سعودي";
+
+            // إضافة الطابع الزمني
+            var currentDate = new Date();
+            var timestamp = currentDate.toLocaleString('ar-SA');
+            document.getElementById('timestamp').innerHTML = "الوقت: " + timestamp;
+
+            // توليد رمز QR
+            var qr = new QRious({
+                element: document.getElementById('qr-code'),
+                size: 200,
+                value: "إجمالي الرسوم: " + totalFee + " ريال سعودي\n" + "الوقت: " + timestamp
+            });
         }
     </script>
 </head>
 <body>
     <div class="container">
         <h2>حاسبة رسوم التدريب</h2>
+
+        <label for="courseType">نوع الدورة:</label>
+        <select id="courseType" name="courseType">
+            <option value="حضوري">حضوري</option>
+            <option value="عن بعد">عن بعد</option>
+        </select>
+
         <label for="students">عدد الطلاب:</label>
         <input type="number" id="students" name="students" min="1" placeholder="أدخل عدد الطلاب">
 
         <label for="hours">عدد ساعات التدريب:</label>
         <input type="number" id="hours" name="hours" min="1" step="0.5" placeholder="أدخل عدد الساعات">
 
+        <label>
+            <input type="checkbox" id="materials" name="materials">
+            شامل الحقيبة التدريبية (إضافة 999 ريال سعودي)
+        </label>
+
         <button type="button" onclick="calculateFee()">احسب الرسوم</button>
 
         <div class="result" id="result"></div>
+        <div class="timestamp" id="timestamp"></div>
+        <div class="qr-code">
+            <canvas id="qr-code"></canvas>
+        </div>
     </div>
 </body>
 </html>
