@@ -4,36 +4,145 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>حاسبة رسوم التدريب</title>
+    <!-- تضمين الخط العربي -->
     <style>
-        /* نفس التنسيق السابق */
+        @font-face {
+            font-family: 'Amiri';
+            src: url('data:font/truetype;charset=utf-8;base64,AAEAAAATAQAABAAwRFNJRwAAA...'); /* استبدل النقاط بالبيانات الكاملة للخط */
+        }
+        body {
+            font-family: 'Amiri', Tahoma, Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            direction: rtl;
+            text-align: right;
+        }
+        .container {
+            max-width: 600px;
+            margin: 20px auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            box-sizing: border-box;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+            position: relative;
+        }
+        h2 {
+            text-align: center;
+            margin-top: 0;
+        }
+        label {
+            display: block;
+            margin-top: 15px;
+        }
+        input[type="number"],
+        select {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            box-sizing: border-box;
+            text-align: right;
+            font-size: 16px;
+        }
+        input[type="checkbox"] {
+            margin-top: 10px;
+            margin-right: 5px;
+            transform: scale(1.2);
+        }
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            font-size: 16px;
+        }
+        button {
+            width: 100%;
+            padding: 15px;
+            margin-top: 20px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            font-size: 18px;
+            cursor: pointer;
+            box-sizing: border-box;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .result {
+            margin-top: 20px;
+            font-size: 20px;
+            font-weight: bold;
+            text-align: center;
+        }
+        .qr-code {
+            margin-top: 20px;
+            text-align: center;
+        }
+        .timestamp {
+            margin-top: 10px;
+            text-align: center;
+            font-size: 16px;
+            color: #555;
+        }
+        .watermark {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            font-size: 14px;
+            color: #aaa;
+        }
+        /* تصميم متجاوب */
+        @media (max-width: 600px) {
+            .container {
+                margin: 10px;
+                padding: 15px;
+            }
+            h2 {
+                font-size: 24px;
+            }
+            label {
+                font-size: 16px;
+            }
+            input[type="number"],
+            select,
+            button {
+                font-size: 16px;
+                padding: 10px;
+            }
+            .result {
+                font-size: 18px;
+            }
+            .timestamp {
+                font-size: 14px;
+            }
+            .checkbox-label {
+                font-size: 16px;
+            }
+        }
     </style>
     <!-- إضافة مكتبات JavaScript -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script>
-        // بيانات الخط المحول إلى Base64
-        var amiriFont = "data:font/truetype;charset=utf-8;base64,AAEAAAASAQAABA..."; // استبدل هذه البيانات ببيانات الخط الفعلية
-
-        function addArabicFont(jsPDFAPI) {
-            jsPDFAPI.addFileToVFS("Amiri-Regular.ttf", amiriFont);
-            jsPDFAPI.addFont("Amiri-Regular.ttf", "Amiri", "normal");
-        }
-
         async function generatePDF(totalFee, timestamp, details) {
             const { jsPDF } = window.jspdf;
-
-            // إضافة الخط العربي
-            addArabicFont(jsPDF.API);
 
             // إنشاء مستند PDF جديد
             const doc = new jsPDF();
 
-            // تعيين الخط العربي
+            // إضافة الخط العربي
+            doc.addFileToVFS("Amiri-Regular.ttf", "AAEAAAATAQAABAAwRFNJRwAAA..."); // استبدل النقاط بالبيانات الكاملة للخط المحول إلى Base64
+            doc.addFont("Amiri-Regular.ttf", "Amiri", "normal");
             doc.setFont("Amiri");
-            doc.setFontSize(20);
+
+            // تعيين الاتجاه من اليمين إلى اليسار
+            doc.setLanguage("ar");
             doc.setR2L(true);
 
             // إضافة العنوان
+            doc.setFontSize(20);
             doc.text("تفاصيل رسوم التدريب", 105, 20, { align: "center" });
 
             // إضافة التفاصيل
@@ -64,10 +173,112 @@
             return pdfUrl;
         }
 
-        // بقية الكود (دالة calculateFee وغيرها) تبقى كما هي
+        async function calculateFee() {
+            var students = parseInt(document.getElementById('students').value);
+            var hours = parseFloat(document.getElementById('hours').value);
+            var courseType = document.getElementById('courseType').value;
+            var includeMaterials = document.getElementById('materials').checked;
+            var hourlyRate = 200; // سعر الساعة الأساسي بالريال السعودي
+            var maxStudents = 30;
+            var totalFee = 0;
+
+            if (isNaN(students) || isNaN(hours) || students <= 0 || hours <= 0) {
+                document.getElementById('result').innerHTML = "الرجاء إدخال أرقام صحيحة في جميع الحقول.";
+                document.getElementById('qr-code').innerHTML = "";
+                document.getElementById('timestamp').innerHTML = "";
+                document.getElementById('download-link').innerHTML = "";
+                return;
+            }
+
+            if (courseType === "حضوري") {
+                // نفس سعر الساعة بدون إضافات بغض النظر عن عدد الطلاب
+                totalFee = hourlyRate * hours;
+            } else if (courseType === "عن بعد") {
+                if (students <= maxStudents) {
+                    totalFee = hourlyRate * hours;
+                } else {
+                    var extraStudents = students - maxStudents;
+                    var extraCostPerHour = extraStudents * (100 / maxStudents);
+                    var newHourlyRate = hourlyRate + extraCostPerHour;
+                    totalFee = newHourlyRate * hours;
+                }
+            }
+
+            // إضافة رسوم الحقيبة التدريبية إذا تم اختيارها
+            if (includeMaterials) {
+                totalFee += 999;
+            }
+
+            totalFee = totalFee.toFixed(2);
+            document.getElementById('result').innerHTML = "إجمالي رسوم التدريب: " + totalFee + " ريال سعودي";
+
+            // إضافة الطابع الزمني
+            var currentDate = new Date();
+            var timestamp = currentDate.toLocaleString('ar-SA');
+            document.getElementById('timestamp').innerHTML = "الوقت: " + timestamp;
+
+            // تفاصيل للتضمين في PDF
+            var details = {
+                "نوع الدورة": courseType,
+                "عدد الطلاب": students,
+                "عدد الساعات": hours,
+                "شامل الحقيبة التدريبية": includeMaterials ? "نعم" : "لا"
+            };
+
+            // توليد ملف PDF والحصول على الرابط
+            var pdfUrl = await generatePDF(totalFee, timestamp, details);
+
+            // توليد رمز QR يشير إلى ملف PDF
+            var qr = new QRious({
+                element: document.getElementById('qr-code'),
+                size: 200,
+                value: pdfUrl
+            });
+
+            // إنشاء رابط لتحميل ملف PDF
+            var downloadLink = document.createElement('a');
+            downloadLink.href = pdfUrl;
+            downloadLink.download = 'تفاصيل_الرسوم.pdf';
+            downloadLink.textContent = 'تحميل تفاصيل الرسوم كملف PDF';
+            downloadLink.style.display = 'block';
+            downloadLink.style.marginTop = '20px';
+            downloadLink.style.textAlign = 'center';
+            downloadLink.style.fontSize = '16px';
+            document.getElementById('download-link').innerHTML = '';
+            document.getElementById('download-link').appendChild(downloadLink);
+        }
     </script>
 </head>
 <body>
-    <!-- بقية الكود تبقى كما هي -->
+    <div class="container">
+        <h2>حاسبة رسوم التدريب</h2>
+
+        <label for="courseType">نوع الدورة:</label>
+        <select id="courseType" name="courseType">
+            <option value="حضوري">حضوري</option>
+            <option value="عن بعد">عن بعد</option>
+        </select>
+
+        <label for="students">عدد الطلاب:</label>
+        <input type="number" id="students" name="students" min="1" placeholder="أدخل عدد الطلاب" inputmode="numeric" pattern="[0-9]*">
+
+        <label for="hours">عدد ساعات التدريب:</label>
+        <input type="number" id="hours" name="hours" min="1" step="0.5" placeholder="أدخل عدد الساعات" inputmode="decimal" pattern="[0-9]*">
+
+        <label class="checkbox-label">
+            <input type="checkbox" id="materials" name="materials">
+            شامل الحقيبة التدريبية (إضافة 999 ريال سعودي)
+        </label>
+
+        <button type="button" onclick="calculateFee()">احسب الرسوم</button>
+
+        <div class="result" id="result"></div>
+        <div class="timestamp" id="timestamp"></div>
+        <div id="download-link"></div>
+        <div class="qr-code">
+            <canvas id="qr-code"></canvas>
+        </div>
+        <div class="watermark">تطوير khaled1</div>
+    </div>
 </body>
 </html>
