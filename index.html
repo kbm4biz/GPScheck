@@ -27,26 +27,12 @@
             text-align: center;
             margin-top: 0;
             color: #007bff;
-            position: relative;
         }
         /* تسليط الضوء على "دورة تخصصية" */
         .highlight {
             background-color: #ffeb3b;
             padding: 0 5px;
             border-radius: 3px;
-        }
-        .reset-button {
-            position: absolute;
-            top: 10px;
-            left: 10px;
-            background-color: transparent;
-            border: none;
-            font-size: 24px;
-            cursor: pointer;
-            color: #007bff;
-        }
-        .reset-button:hover {
-            color: #0056b3;
         }
         label {
             display: block;
@@ -78,7 +64,7 @@
             width: 100%;
             padding: 15px;
             margin-top: 20px;
-            background-color: #28a745; /* تغيير لون الزر */
+            background-color: #28a745; /* لون زر "احسب الرسوم" */
             color: #fff;
             border: none;
             border-radius: 5px;
@@ -88,6 +74,13 @@
         }
         button:hover {
             background-color: #218838;
+        }
+        .reset-button {
+            background-color: #dc3545; /* لون زر إعادة التعيين */
+            margin-top: 10px;
+        }
+        .reset-button:hover {
+            background-color: #c82333;
         }
         .result {
             margin-top: 20px;
@@ -136,11 +129,6 @@
             h2 {
                 font-size: 24px;
             }
-            .reset-button {
-                top: 10px;
-                left: 10px;
-                font-size: 20px;
-            }
             label {
                 font-size: 16px;
             }
@@ -170,8 +158,6 @@
 <body>
     <div class="container">
         <h2>حاسبة رسوم تدريب (<span class="highlight">دورة تخصصية</span>)</h2>
-        <!-- زر إعادة التعيين -->
-        <button type="button" onclick="resetCalculator()" class="reset-button" title="إعادة تعيين">🔄</button>
 
         <label for="courseType">نوع الدورة:</label>
         <select id="courseType" name="courseType">
@@ -191,6 +177,9 @@
         </label>
 
         <button type="button" onclick="calculateFee()">احسب الرسوم</button>
+
+        <!-- زر إعادة التعيين -->
+        <button type="button" onclick="resetCalculator()" class="reset-button">🔄 إعادة تعيين</button>
 
         <div class="result" id="result"></div>
         <div class="timestamp" id="timestamp"></div>
@@ -313,6 +302,8 @@
             document.getElementById('details').innerHTML = '';
             document.getElementById('qr-code').innerHTML = '';
             document.getElementById('download-link').innerHTML = '';
+            // إزالة المعلمات من الرابط
+            history.replaceState(null, '', window.location.pathname);
         }
 
         // دالة لقراءة المعلمات من الرابط وعرض التفاصيل تلقائيًا
