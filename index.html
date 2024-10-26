@@ -76,8 +76,16 @@
             background-color: #218838;
         }
         .reset-button {
-            background-color: #dc3545; /* لون زر إعادة التعيين */
+            width: 100%;
+            padding: 15px;
             margin-top: 10px;
+            background-color: #dc3545; /* لون زر إعادة التعيين */
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            font-size: 18px;
+            cursor: pointer;
+            box-sizing: border-box;
         }
         .reset-button:hover {
             background-color: #c82333;
@@ -113,12 +121,19 @@
             font-size: 16px;
             color: #555;
         }
-        .watermark {
-            position: absolute;
-            bottom: 10px;
-            left: 10px;
+        .footer {
+            margin-top: 30px;
+            text-align: center;
             font-size: 14px;
             color: #aaa;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .footer img {
+            margin-left: 10px;
+            width: 50px; /* عرض الصورة */
+            height: auto;
         }
         /* تصميم متجاوب */
         @media (max-width: 600px) {
@@ -149,6 +164,12 @@
             }
             .checkbox-label {
                 font-size: 16px;
+            }
+            .footer {
+                flex-direction: column;
+            }
+            .footer img {
+                margin: 10px 0;
             }
         }
     </style>
@@ -188,7 +209,12 @@
         <div class="qr-code">
             <canvas id="qr-code"></canvas>
         </div>
-        <div class="watermark">تطوير khaled1</div>
+
+        <!-- تذييل الصفحة مع الصورة -->
+        <div class="footer">
+            <span>تطوير khaled1</span>
+            <img src="https://drive.google.com/file/d/1LEQZwxlH6oG_eiwzJBXO0-QVk4KsXKk7/view?usp=drivesdk" alt="Badge">
+        </div>
     </div>
 
     <script>
@@ -324,4 +350,4 @@
         window.onload = loadFromURL;
     </script>
 </body>
-</html>b
+</html>
