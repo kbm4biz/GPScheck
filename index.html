@@ -61,11 +61,19 @@
             text-align: center;
             font-size: 20px;
         }
+        #disclaimer {
+            margin-top: 20px;
+            font-size: 14px;
+            text-align: center;
+            color: #555;
+        }
     </style>
     <script>
         async function verifyLocation() {
             document.getElementById('loadingMessage').innerText = 'جاري التحقق من الموقع، الرجاء الانتظار...';
             document.getElementById('errorMessage').innerText = '';
+
+            const radiusInKm = 0.3; // تم ضبط النطاق إلى 0.3 كم (300 متر)
 
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(async function(position) {
@@ -73,8 +81,7 @@
                     const userLon = position.coords.longitude;
 
                     try {
-                        const sheetUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQ2cFw2_Jrr1j-Iy48e2BREiBlJ9Bj5vMTh3tl72YtTcnJ2DOXUDrD9I5SeVH0WSHeg9ec_tzXDZgEN/pub?output=csv';
-                
+                        const sheetUrl = 'https://docs.google.com/spreadsheets/d/e/معرف_الجدول_الخاصة_بك/pub?output=csv';
                         const response = await fetch(sheetUrl);
 
                         if (!response.ok) {
@@ -89,7 +96,7 @@
                             const lat = parseFloat(latStr.trim());
                             const lon = parseFloat(lonStr.trim());
                             const distance = getDistanceFromLatLonInKm(userLat, userLon, lat, lon);
-                            if (distance <= 1) { // ضمن 1 كم
+                            if (distance <= radiusInKm) { // ضمن النطاق المطلوب
                                 found = true;
                                 break;
                             }
@@ -98,7 +105,7 @@
                         if (found) {
                             window.location.href = 'https://example.com'; // استبدل هذا بالرابط المطلوب
                         } else {
-                            document.getElementById('errorMessage').innerText = 'عذراً، أنت لست في المدرسة.';
+                            document.getElementById('errorMessage').innerText = 'عذراً، خدمة حجز مواعيد الانتظار متوفره فقط للمتواجدين حاليا بالقسم.';
                         }
                     } catch (error) {
                         console.error('Error:', error);
@@ -143,6 +150,7 @@
         <button onclick="verifyLocation()">تحقق من الموقع</button>
         <p id="errorMessage"></p>
         <p id="loadingMessage"></p>
+        <p id="disclaimer">. الاداه مفتوحة المصدر. نحن لا نقوم بتخزين أو تسجيل موقعك. يتم استخدام موقعك للتحقق فقط لتجنب سوء الاستخدام.</p>
     </div>
 </body>
 </html>
