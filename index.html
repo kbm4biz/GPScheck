@@ -2,352 +2,146 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>حاسبة رسوم تدريب (دورة تخصصية)</title>
+    <title>التحقق من الموقع</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- تضمين خطوط Google -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo&display=swap" rel="stylesheet">
+
     <style>
         body {
-            font-family: Tahoma, Arial, sans-serif;
-            background-color: #f4f4f4;
+            font-family: 'Cairo', Arial, sans-serif;
+            background-color: #f5f5f5;
             margin: 0;
             padding: 0;
-            direction: rtl;
-            text-align: right;
+            color: #333;
         }
         .container {
-            max-width: 600px;
-            margin: 20px auto;
-            background: #fff;
+            max-width: 400px;
+            margin: 100px auto 0 auto;
             padding: 20px;
-            border-radius: 5px;
-            box-sizing: border-box;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
-            position: relative;
+            background-color: #c9c5c5;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 24px;
         }
         h2 {
             text-align: center;
-            margin-top: 0;
-            color: #007bff;
-        }
-        /* تسليط الضوء على "دورة تخصصية" */
-        .highlight {
-            background-color: #ffeb3b;
-            padding: 0 5px;
-            border-radius: 3px;
-        }
-        label {
-            display: block;
-            margin-top: 15px;
-            font-weight: bold;
-        }
-        input[type="number"],
-        select {
-            width: 100%;
-            padding: 10px;
-            margin-top: 5px;
-            box-sizing: border-box;
-            text-align: right;
+            margin-bottom: 20px;
             font-size: 16px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-        }
-        input[type="checkbox"] {
-            margin-top: 10px;
-            margin-right: 5px;
-            transform: scale(1.2);
-        }
-        .checkbox-label {
-            display: flex;
-            align-items: center;
-            font-size: 16px;
+            color: yellow;
         }
         button {
+            font-family: 'Cairo', sans-serif;
             width: 100%;
-            padding: 15px;
-            margin-top: 20px;
-            background-color: #28a745; /* لون زر "احسب الرسوم" */
-            color: #fff;
+            padding: 12px 15px;
+            background-color: #007BFF;
             border: none;
-            border-radius: 5px;
+            border-radius: 4px;
             font-size: 18px;
+            color: #fff;
             cursor: pointer;
-            box-sizing: border-box;
         }
         button:hover {
-            background-color: #218838;
+            background-color: #0056b3;
         }
-        .reset-button {
-            width: 100%;
-            padding: 15px;
-            margin-top: 10px;
-            background-color: #dc3545; /* لون زر إعادة التعيين */
-            color: #fff;
-            border: none;
-            border-radius: 5px;
-            font-size: 18px;
-            cursor: pointer;
-            box-sizing: border-box;
-        }
-        .reset-button:hover {
-            background-color: #c82333;
-        }
-        .result {
-            margin-top: 20px;
-            font-size: 22px;
-            font-weight: bold;
-            text-align: center;
-            color: #28a745;
-        }
-        .details {
-            margin-top: 20px;
-            font-size: 18px;
-            line-height: 1.6;
-            border: 2px solid #007bff; /* إضافة إطار */
-            padding: 15px; /* إضافة حشوة */
-            border-radius: 5px; /* زوايا مستديرة */
-            background-color: #e9f5ff; /* خلفية بلون فاتح */
-        }
-        .details h3 {
-            text-align: center;
-            margin-bottom: 10px;
-            color: #007bff;
-        }
-        .qr-code {
+        #errorMessage {
+            color: red;
             margin-top: 20px;
             text-align: center;
+            font-size: 20px;
         }
-        .timestamp {
-            margin-top: 10px;
+        #loadingMessage {
+            color: #007BFF;
+            margin-top: 20px;
             text-align: center;
-            font-size: 16px;
-            color: #555;
-        }
-        .footer {
-            margin-top: 30px;
-            text-align: center;
-            font-size: 14px;
-            color: #aaa;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .footer img {
-            margin-left: 10px;
-            width: 50px; /* عرض الصورة */
-            height: auto;
-        }
-        /* تصميم متجاوب */
-        @media (max-width: 600px) {
-            .container {
-                margin: 10px;
-                padding: 15px;
-            }
-            h2 {
-                font-size: 24px;
-            }
-            label {
-                font-size: 16px;
-            }
-            input[type="number"],
-            select,
-            button {
-                font-size: 16px;
-                padding: 10px;
-            }
-            .result {
-                font-size: 20px;
-            }
-            .details {
-                font-size: 16px;
-            }
-            .timestamp {
-                font-size: 14px;
-            }
-            .checkbox-label {
-                font-size: 16px;
-            }
-            .footer {
-                flex-direction: column;
-            }
-            .footer img {
-                margin: 10px 0;
-            }
+            font-size: 20px;
         }
     </style>
-    <!-- إضافة مكتبة QRious -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
+    <script>
+        async function verifyLocation() {
+            document.getElementById('loadingMessage').innerText = 'جاري التحقق من الموقع، الرجاء الانتظار...';
+            document.getElementById('errorMessage').innerText = '';
+
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(async function(position) {
+                    const userLat = position.coords.latitude;
+                    const userLon = position.coords.longitude;
+
+                    try {
+                        const sheetUrl = 'https://docs.google.com/spreadsheets/d/e/معرف_الجدول_الخاصة_بك/pub?output=csv';
+                        const response = await fetch(sheetUrl);
+
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+
+                        const csvText = await response.text();
+                        const lines = csvText.trim().split('\n');
+                        let found = false;
+                        for (let i = 0; i < lines.length; i++) {
+                            const [latStr, lonStr] = lines[i].split(',');
+                            const lat = parseFloat(latStr.trim());
+                            const lon = parseFloat(lonStr.trim());
+                            const distance = getDistanceFromLatLonInKm(userLat, userLon, lat, lon);
+                            if (distance <= 1) { // ضمن 1 كم
+                                found = true;
+                                break;
+                            }
+                        }
+
+                        if (found) {
+                            window.location.href = 'https://example.com'; // استبدل هذا بالرابط المطلوب
+                        } else {
+                            document.getElementById('errorMessage').innerText = 'عذراً، أنت لست في المدرسة.';
+                        }
+                    } catch (error) {
+                        console.error('Error:', error);
+                        document.getElementById('errorMessage').innerText = 'حدث خطأ أثناء التحقق. الرجاء المحاولة مرة أخرى لاحقاً.';
+                    } finally {
+                        document.getElementById('loadingMessage').innerText = '';
+                    }
+                }, function(error) {
+                    console.error('Geolocation error:', error);
+                    document.getElementById('errorMessage').innerText = 'تعذر الحصول على موقعك. الرجاء التحقق من إعدادات الموقع على جهازك.';
+                    document.getElementById('loadingMessage').innerText = '';
+                });
+            } else {
+                document.getElementById('errorMessage').innerText = 'المتصفح الخاص بك لا يدعم خاصية تحديد الموقع الجغرافي.';
+                document.getElementById('loadingMessage').innerText = '';
+            }
+        }
+
+        function getDistanceFromLatLonInKm(lat1, lon1, lat2, lon2) {
+            const R = 6371; // نصف قطر الأرض بالكيلومترات
+            const dLat = deg2rad(lat2 - lat1);
+            const dLon = deg2rad(lon2 - lon1);
+            const a =
+                Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) *
+                Math.sin(dLon / 2) * Math.sin(dLon / 2)
+                ;
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+            const d = R * c; // المسافة بالكيلومترات
+            return d;
+        }
+
+        function deg2rad(deg) {
+            return deg * (Math.PI / 180);
+        }
+    </script>
 </head>
 <body>
     <div class="container">
-        <h2>حاسبة رسوم تدريب (<span class="highlight">دورة تخصصية</span>)</h2>
-
-        <label for="courseType">نوع الدورة:</label>
-        <select id="courseType" name="courseType">
-            <option value="حضوري">حضوري</option>
-            <option value="عن بعد">عن بعد</option>
-        </select>
-
-        <label for="students">عدد الطلاب:</label>
-        <input type="number" id="students" name="students" min="1" placeholder="أدخل عدد الطلاب" inputmode="numeric" pattern="[0-9]*">
-
-        <label for="hours">عدد ساعات التدريب:</label>
-        <input type="number" id="hours" name="hours" min="1" step="0.5" placeholder="أدخل عدد الساعات" inputmode="decimal" pattern="[0-9]*">
-
-        <label class="checkbox-label">
-            <input type="checkbox" id="materials" name="materials">
-            شامل الحقيبة التدريبية (إضافة 999 ريال سعودي)
-        </label>
-
-        <button type="button" onclick="calculateFee()">احسب الرسوم</button>
-
-        <!-- زر إعادة التعيين -->
-        <button type="button" onclick="resetCalculator()" class="reset-button">🔄 إعادة تعيين</button>
-
-        <div class="result" id="result"></div>
-        <div class="timestamp" id="timestamp"></div>
-        <div class="details" id="details"></div>
-        <div id="download-link"></div>
-        <div class="qr-code">
-            <canvas id="qr-code"></canvas>
-        </div>
-
-        <!-- تذييل الصفحة مع الصورة -->
-        <div class="footer">
-            <span>تطوير khaled1</span>
-            <img src="https://drive.google.com/uc?export=view&id=1LEQZwxlH6oG_eiwzJBXO0-QVk4KsXKk7" alt="Badge">
-        </div>
+        <h1>التحقق من الموقع</h1>
+        <h2><mark>خاص بقسم تقنية الأعمال - كلية حائل - بنين</mark></h2>
+        <button onclick="verifyLocation()">تحقق من الموقع</button>
+        <p id="errorMessage"></p>
+        <p id="loadingMessage"></p>
     </div>
-
-    <script>
-        function calculateFee() {
-            try {
-                var students = parseInt(document.getElementById('students').value);
-                var hours = parseFloat(document.getElementById('hours').value);
-                var courseType = document.getElementById('courseType').value;
-                var includeMaterials = document.getElementById('materials').checked;
-                var hourlyRate = 200; // سعر الساعة الأساسي بالريال السعودي
-                var maxStudents = 30;
-                var totalFee = 0;
-
-                if (isNaN(students) || isNaN(hours) || students <= 0 || hours <= 0) {
-                    document.getElementById('result').innerHTML = "الرجاء إدخال أرقام صحيحة في جميع الحقول.";
-                    document.getElementById('timestamp').innerHTML = "";
-                    document.getElementById('details').innerHTML = "";
-                    document.getElementById('qr-code').innerHTML = "";
-                    document.getElementById('download-link').innerHTML = "";
-                    return;
-                }
-
-                if (courseType === "عن بعد") {
-                    // نفس سعر الساعة بدون إضافات بغض النظر عن عدد الطلاب
-                    totalFee = hourlyRate * hours;
-                } else if (courseType === "حضوري") {
-                    if (students <= maxStudents) {
-                        totalFee = hourlyRate * hours;
-                    } else {
-                        var extraStudents = students - maxStudents;
-                        var extraCostPerHour = extraStudents * (100 / maxStudents);
-                        var newHourlyRate = hourlyRate + extraCostPerHour;
-                        totalFee = newHourlyRate * hours;
-                    }
-                }
-
-                // إضافة رسوم الحقيبة التدريبية إذا تم اختيارها
-                if (includeMaterials) {
-                    totalFee += 999;
-                }
-
-                totalFee = totalFee.toFixed(2);
-                document.getElementById('result').innerHTML = "إجمالي رسوم التدريب: " + totalFee + " ريال سعودي";
-
-                // إضافة الطابع الزمني
-                var currentDate = new Date();
-                var timestamp = currentDate.toLocaleString('ar-SA');
-                document.getElementById('timestamp').innerHTML = "الوقت: " + timestamp;
-
-                // تفاصيل للتضمين في العرض
-                var details = {
-                    "نوع الدورة": courseType,
-                    "عدد الطلاب": students,
-                    "عدد الساعات": hours,
-                    "شامل الحقيبة التدريبية": includeMaterials ? "نعم" : "لا",
-                    "إجمالي الرسوم": totalFee + " ريال سعودي",
-                    "الوقت": timestamp
-                };
-
-                // عرض التفاصيل في الصفحة
-                var detailsDiv = document.getElementById('details');
-                detailsDiv.innerHTML = "<h3>تفاصيل التسعيرة:</h3>";
-                for (const [key, value] of Object.entries(details)) {
-                    detailsDiv.innerHTML += `<p><strong>${key}:</strong> ${value}</p>`;
-                }
-
-                // إنشاء رابط يحتوي على المعلمات
-                var urlParams = new URLSearchParams();
-                urlParams.append('courseType', courseType);
-                urlParams.append('students', students);
-                urlParams.append('hours', hours);
-                urlParams.append('materials', includeMaterials);
-                var currentUrl = window.location.href.split('?')[0];
-                var fullUrl = currentUrl + '?' + urlParams.toString();
-
-                // توليد رمز QR يشير إلى الرابط
-                var qr = new QRious({
-                    element: document.getElementById('qr-code'),
-                    size: 200,
-                    value: fullUrl
-                });
-
-                // إنشاء رابط لمشاركة التفاصيل
-                var shareLink = document.createElement('a');
-                shareLink.href = fullUrl;
-                shareLink.textContent = 'رابط لمشاركة التفاصيل';
-                shareLink.style.display = 'block';
-                shareLink.style.marginTop = '20px';
-                shareLink.style.textAlign = 'center';
-                shareLink.style.fontSize = '16px';
-                shareLink.style.color = '#007bff'; /* لون الرابط */
-                shareLink.style.textDecoration = 'none'; /* إزالة التسطير */
-                shareLink.onmouseover = function() { this.style.textDecoration = 'underline'; };
-                shareLink.onmouseout = function() { this.style.textDecoration = 'none'; };
-                document.getElementById('download-link').innerHTML = '';
-                document.getElementById('download-link').appendChild(shareLink);
-
-            } catch (error) {
-                console.error('Error in calculateFee:', error);
-            }
-        }
-
-        // دالة لإعادة تعيين الحاسبة
-        function resetCalculator() {
-            document.getElementById('students').value = '';
-            document.getElementById('hours').value = '';
-            document.getElementById('courseType').value = 'حضوري';
-            document.getElementById('materials').checked = false;
-            document.getElementById('result').innerHTML = '';
-            document.getElementById('timestamp').innerHTML = '';
-            document.getElementById('details').innerHTML = '';
-            document.getElementById('qr-code').innerHTML = '';
-            document.getElementById('download-link').innerHTML = '';
-            // إزالة المعلمات من الرابط
-            history.replaceState(null, '', window.location.pathname);
-        }
-
-        // دالة لقراءة المعلمات من الرابط وعرض التفاصيل تلقائيًا
-        function loadFromURL() {
-            var urlParams = new URLSearchParams(window.location.search);
-            if (urlParams.has('courseType') && urlParams.has('students') && urlParams.has('hours')) {
-                document.getElementById('courseType').value = urlParams.get('courseType');
-                document.getElementById('students').value = urlParams.get('students');
-                document.getElementById('hours').value = urlParams.get('hours');
-                var materials = urlParams.get('materials') === 'true';
-                document.getElementById('materials').checked = materials;
-                // حساب الرسوم وعرض التفاصيل
-                calculateFee();
-            }
-        }
-
-        // استدعاء الدالة عند تحميل الصفحة
-        window.onload = loadFromURL;
-    </script>
 </body>
 </html>
