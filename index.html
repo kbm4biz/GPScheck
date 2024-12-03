@@ -73,7 +73,8 @@
                     const userLon = position.coords.longitude;
 
                     try {
-                        const sheetUrl = 'https://docs.google.com/spreadsheets/d/e/معرف_الجدول_الخاصة_بك/pub?output=csv';
+                        const sheetUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQ2cFw2_Jrr1j-Iy48e2BREiBlJ9Bj5vMTh3tl72YtTcnJ2DOXUDrD9I5SeVH0WSHeg9ec_tzXDZgEN/pub?output=csv';
+                
                         const response = await fetch(sheetUrl);
 
                         if (!response.ok) {
